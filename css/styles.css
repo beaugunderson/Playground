@@ -1,0 +1,16 @@
+body,
+div {
+   vertical-align: top;
+}
+
+p {
+   margin: 0;
+}
+
+#collections {
+   width: 250px;
+}
+
+#fields {
+   width: 450px;
+}

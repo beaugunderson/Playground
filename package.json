@@ -1,0 +1,26 @@
+{
+   "name": "Playground",
+   "author": "Beau Gunderson <beau@beaugunderson.com>",
+   "description": "It's your data. Play with it!",
+   "version": "0.0.0",
+   "licenses": [{
+      "type": "MIT",
+      "url": "http://creativecommons.org/licenses/MIT/"
+   }],
+   "repository": {
+      "title": "Playground",
+      "handle": "playground",
+      "static": true,
+      "homepage": "https://github.com/beaugunderson/Playground",
+      "github": "https://github.com/beaugunderson/Playground",
+      "type": "app",
+      "uses": {
+         "types": [
+            "contacts",
+            "links",
+            "photos",
+            "places"
+         ]
+      }
+   }
+}
