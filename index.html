@@ -23,9 +23,10 @@
            'js-lib/quantize.js',
            'js-lib/sprintf.js',
            'js-lib/alphanum.js',
+           'js-lib/throbber.js',
 
-           'js/script.js',
            'js/config.js',
+           'js/script.js',
 
            '/static/js/viewer.js');
   </script>
@@ -38,18 +39,55 @@
   <link type="text/css" rel="stylesheet" href="js-lib/chosen/chosen.css" />
 
   <style type="text/css">
+   @import url("bootstrap/css/bootstrap.css");
+   @import url("bootstrap/css/bootstrap.responsive");
+
    @import url("css/styles.css");
   </style>
  </head>
 
  <body>
-  <select id="collections" data-placeholder="Choose a collection">
-   <option></option>
-  </select>
+  <div class="container-fluid">
+   <div class="row-fluid">
+    <div class="span3">
+     <select id="collections" data-placeholder="Choose a collection">
+      <option></option>
 
-  <select id="fields" multiple>
-   <optgroup id="numbers" label="Numbers"></optgroup>
-   <optgroup id="strings" label="Strings"></optgroup>
-  </select>
+      <!-- Populated programatically -->
+     </select>
+
+     <span id="json-throbber"></span>
+
+     <div id="graph-types">
+      <label class="radio"><input name="graph-type" type="radio" value="table" checked /> Table</label>
+      <label class="radio"><input name="graph-type" type="radio" value="histogram" /> Histogram</label>
+      <label class="radio"><input name="graph-type" type="radio" value="scatter" /> Scatter plot</label>
+      <label class="radio"><input name="graph-type" type="radio" value="map" /> Map</label>
+     </div>
+
+     <div id="fields">
+      <h2>Numbers</h2>
+
+      <ul id="numbers">
+       <!-- Populated programatically -->
+      </ul>
+
+      <h2>Strings</h2>
+
+      <ul id="strings">
+       <!-- Populated programatically -->
+      </ul>
+     </div>
+    </div>
+
+    <div id="span10">
+     Some test text here, just to see what it looks like.
+
+     <div id="canvas">
+      <!-- Populated programatically -->
+     </div>
+    </div>
+   </div>
+  </div>
  </body>
 </html>

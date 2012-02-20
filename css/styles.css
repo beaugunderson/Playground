@@ -1,16 +1,24 @@
-body,
-div {
-   vertical-align: top;
-}
-
-p {
-   margin: 0;
+#json-throbber {
+   vertical-align: middle;
+   display: inline-block;
+   margin: 3px;
 }
 
 #collections {
    width: 250px;
 }
 
-#fields {
-   width: 450px;
+#graph-types {
+   margin-top: 1em;
+}
+
+ul {
+   margin: 0;
+   padding: 0;
+}
+
+li {
+   margin: 0;
+   padding: 0;
+   list-style-type: none;
 }
