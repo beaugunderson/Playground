@@ -143,7 +143,7 @@ function updateFields() {
       _.each(graphType.fields, function(field) {
          var $field = $(sprintf(
             '<div class="input-append control-group">' +
-               '<input id="%(name)s" data-field="%(name)s" type="text" placeholder="%(title)s" />' +
+               '<input id="%(name)s" data-field="%(name)s" type="text" placeholder="%(title)s" class="input-medium" />' +
                '<span class="add-on"><a href="#"><em>ƒ</em>(<em>χ</em>)</a></span>' +
             '</div>', field)).appendTo('#graph-fields');
 
