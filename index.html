@@ -19,6 +19,7 @@
            'js-lib/d3/d3.min.js',
            'js-lib/d3/d3.geo.min.js',
            'js-lib/d3/d3.geom.min.js',
+           'js-lib/d3/d3.layout.min.js',
 
            'js-lib/chosen/chosen.jquery.min.js',
 
@@ -33,6 +34,8 @@
            'js-lib/codemirror2/mode/javascript/javascript.js',
            'js-lib/codemirror2/lib/util/simple-hint.js',
            'js-lib/codemirror2/lib/util/javascript-hint.js',
+
+           'js/d3-histogram.js',
 
            'js/config.js',
            'js/script.js',
@@ -71,16 +74,8 @@
        <!-- Populated programatically -->
       </optgroup>
 
-      <optgroup id="connectors" label="Connectors">
-       <!-- Populated programatically -->
-
-       <option value="twitter">Twitter</option>
-       <option value="foursquare">Foursquare</option>
-       <option value="lastfm">Last.FM</option>
-      </optgroup>
+      <!-- Populated programatically -->
      </select>
-
-     <span id="json-throbber"></span>
 
      <h2>Graph type</h2>
 
@@ -98,14 +93,20 @@
       <!-- Populated programatically -->
      </div>
 
+     <h2><span id="source-name">Source</span> <span id="json-throbber"></span></h2>
+
+     <div class="well" id="no-data-returned">
+      No data was returned from this source.
+     </div>
+
      <div id="fields">
-      <h2>Numbers</h2>
+      <h3>Numbers</h3>
 
       <ul id="numbers">
        <!-- Populated programatically -->
       </ul>
 
-      <h2>Strings</h2>
+      <h3>Strings</h3>
 
       <ul id="strings">
        <!-- Populated programatically -->
@@ -114,7 +115,8 @@
     </div>
 
     <div id="right-column" class="span9 well">
-     Some test text here, just to see what it looks like.
+     <h2 id="title"></h2>
+     <h3 id="sub-title"></h3>
 
      <div id="canvas">
       <!-- Populated programatically -->
@@ -131,8 +133,10 @@
    </div>
 
    <div class="modal-body">
-    <textarea id="function-definition">// You're writing the body of a function that receives
-// an argument named 'value'
+    <textarea id="function-definition">
+// You're writing the body of a function that receives
+// an argument named 'value'. This allows you to coerce
+// a string value to an integer for graphing.
 return value;</textarea>
 
     <div id="function-output-wrapper">
@@ -141,8 +145,8 @@ return value;</textarea>
    </div>
 
    <div class="modal-footer">
-    <a href="#" class="btn btn-primary">Save changes</a>
-    <a href="#" class="btn">Close</a>
+    <a href="#" id="save-button" class="btn btn-primary">Save changes</a>
+    <a href="#" id="cancel-button" class="btn">Cancel</a>
    </div>
   </div>
  </body>

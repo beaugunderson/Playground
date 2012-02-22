@@ -7,11 +7,13 @@
          height: null, // uses the height of the containing element
          bins: 10,
          bottompad: 10, // pixels of room to leave at the bottom for binlabels
+         leftpad: 15,
+         toppad: 10,
          labelsize: null, // uses the height of the padding - 2 for font size
-
          // function which generates bin labels
          // by default it labels the bins from 1 to N, where N is the number of bins
-         labelGenerator: function(d, i) { return i+1+""; }
+         labelGenerator: function(d, i) { return i+1+""; },
+         rangeGenerator: function(d, i) { return i+1+""; }
       }, settings);
 
       return this.each(function() {
@@ -25,11 +27,11 @@
 
             var x = d3.scale.ordinal()
                .domain(histogram.map(function(d) { return d.x; }))
-               .rangeRoundBands([0, w]);
+               .rangeRoundBands([settings.leftpad, w - settings.leftpad]);
 
             var y = d3.scale.linear()
                .domain([0, d3.max(histogram, function(d) { return d.y; })])
-               .range([0, h - settings.bottompad]);
+               .range([0, h - settings.bottompad - settings.toppad]);
 
             var vis = d3.select(this).append("svg:svg")
                .attr("class", "chart")
@@ -54,21 +56,54 @@
 
             // bottom line
             vis.append("svg:line")
-               .attr("x1", 0)
+               .attr("x1", settings.leftpad)
                .attr("x2", w)
                .attr("y1", h - settings.bottompad)
                .attr("y2", h - settings.bottompad);
 
-            // bucket numbers
-            vis.selectAll("text")
+            // counts
+            vis.selectAll("text.count")
                .data(histogram)
                .enter().append("svg:text")
-                  .attr("x", function(d, i) { return x(d.x) + x.rangeBand() / 2; })
-                  .attr("y", h)
+                  .attr("x", function(d) { return x(d.x) + x.rangeBand() / 2; })
+                  .attr("y", function(d) { return (h - y(d.y)) - 25; })
+                  .attr("class", "count")
                   .attr("width", x.rangeBand())
                   .attr("text-anchor", function(d) { return "middle"; })
                   .attr("font-size", ls)
-                  .text(settings.labelGenerator);
+                  .attr("opacity", 0.0)
+                  .text(settings.labelGenerator)
+               .transition()
+                  .duration(750)
+                  .attr("opacity", 1.0);
+
+            // range numbers
+            vis.selectAll("text.range")
+               .data(histogram)
+               .enter().append("svg:text")
+                  .attr("x", function(d) { return x(d.x); })
+                  .attr("y", h)
+                  .attr("class", "range")
+                  .attr("width", x.rangeBand())
+                  .attr("text-anchor", function(d) { return "middle"; })
+                  .attr("font-size", ls)
+                  .text(settings.rangeGenerator);
+
+            // range numbers (the last one)
+            // XXX: The worst possible way to do this.
+            vis.selectAll("text.lastRange")
+               .data([histogram[histogram.length - 1]])
+               .enter().append("svg:text")
+                  .attr("x", function(d) {
+                     return x(d.x) + x.rangeBand(); })
+                  .attr("y", h)
+                  .attr("class", "lastRange")
+                  .attr("width", x.rangeBand())
+                  .attr("text-anchor", function(d) { return "middle"; })
+                  .attr("font-size", ls)
+                  .text(function(d) {
+                     return settings.rangeGenerator({ x: d.x + d.dx });
+                  });
          });
       });
    };

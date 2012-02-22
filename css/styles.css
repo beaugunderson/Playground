@@ -12,8 +12,20 @@ body {
    box-sizing: border-box;
 }
 
+#numbers {
+   margin-bottom: 1em;
+}
+
 #function-definition {
    width: 95%;
+}
+
+.chzn-container {
+   margin-bottom: 1em;
+}
+
+#graph-types {
+   margin-bottom: 1em;
 }
 
 #function-output-wrapper {
@@ -44,4 +56,38 @@ li {
    margin: 0;
    padding: 0;
    list-style-type: none;
+}
+
+#no-data-returned {
+   display: none;
+}
+
+/* Graph styles */
+
+#title, #sub-title {
+   text-align: center;
+}
+
+rect {
+   fill: #29abe2;
+   stroke: #fff;
+   -webkit-transition: fill 0.3s;
+   -moz-transition: fill 0.3s;
+   -o-transition: fill 0.3s;
+   -ms-transition: fill 0.3s;
+   transition: fill 0.3s;
+}
+
+rect:hover {
+   fill: #777;
+}
+
+line {
+   stroke: #ccc;
+   shape-rendering: crispEdges;
+}
+
+text {
+   fill: #666;
+   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
