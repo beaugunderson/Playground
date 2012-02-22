@@ -10,7 +10,11 @@
   <script>
    /* TODO: Combine some of these as a deployment step */
    head.js('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
+           'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js',
+
            'https://maps.google.com/maps/api/js?sensor=true',
+
+           'bootstrap/js/bootstrap.min.js',
 
            'js-lib/d3/d3.min.js',
            'js-lib/d3/d3.geo.min.js',
@@ -24,6 +28,11 @@
            'js-lib/sprintf.js',
            'js-lib/alphanum.js',
            'js-lib/throbber.js',
+
+           'js-lib/codemirror2/lib/codemirror.js',
+           'js-lib/codemirror2/mode/javascript/javascript.js',
+           'js-lib/codemirror2/lib/util/simple-hint.js',
+           'js-lib/codemirror2/lib/util/javascript-hint.js',
 
            'js/config.js',
            'js/script.js',
@@ -42,6 +51,9 @@
    @import url("bootstrap/css/bootstrap.css");
    @import url("bootstrap/css/bootstrap.responsive");
 
+   @import url("js-lib/codemirror2/lib/codemirror.css");
+   @import url("js-lib/codemirror2/lib/util/simple-hint.css");
+
    @import url("css/styles.css");
   </style>
  </head>
@@ -50,19 +62,40 @@
   <div class="container-fluid">
    <div class="row-fluid">
     <div class="span3">
-     <select id="collections" data-placeholder="Choose a collection">
+     <h2>Data source</h2>
+
+     <select id="data-sources" class="span10" data-placeholder="Choose a data source">
       <option></option>
 
-      <!-- Populated programatically -->
+      <optgroup id="collections" label="Collections">
+       <!-- Populated programatically -->
+      </optgroup>
+
+      <optgroup id="connectors" label="Connectors">
+       <!-- Populated programatically -->
+
+       <option value="twitter">Twitter</option>
+       <option value="foursquare">Foursquare</option>
+       <option value="lastfm">Last.FM</option>
+      </optgroup>
      </select>
 
      <span id="json-throbber"></span>
 
+     <h2>Graph type</h2>
+
      <div id="graph-types">
-      <label class="radio"><input name="graph-type" type="radio" value="table" checked /> Table</label>
-      <label class="radio"><input name="graph-type" type="radio" value="histogram" /> Histogram</label>
-      <label class="radio"><input name="graph-type" type="radio" value="scatter" /> Scatter plot</label>
-      <label class="radio"><input name="graph-type" type="radio" value="map" /> Map</label>
+      <label class="radio"><input name="graph-type" type="radio" value="table" disabled /> Table</label>
+      <label class="radio"><input name="graph-type" type="radio" value="histogram" checked /> Histogram</label>
+      <label class="radio"><input name="graph-type" type="radio" value="scatter" disabled /> Scatter plot</label>
+      <label class="radio"><input name="graph-type" type="radio" value="line" disabled /> Line graph</label>
+      <label class="radio"><input name="graph-type" type="radio" value="map" disabled /> Map</label>
+     </div>
+
+     <h2>Graph fields</h2>
+
+     <div id="graph-fields">
+      <!-- Populated programatically -->
      </div>
 
      <div id="fields">
@@ -80,13 +113,36 @@
      </div>
     </div>
 
-    <div id="span10">
+    <div id="right-column" class="span9 well">
      Some test text here, just to see what it looks like.
 
      <div id="canvas">
       <!-- Populated programatically -->
      </div>
     </div>
+   </div>
+  </div>
+
+  <div class="modal fade" id="function-modal">
+   <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+
+    <h3>Function definition</h3>
+   </div>
+
+   <div class="modal-body">
+    <textarea id="function-definition">// You're writing the body of a function that receives
+// an argument named 'value'
+return value;</textarea>
+
+    <div id="function-output-wrapper">
+     <strong>Output:</strong> <span id="function-output"></span>
+    </div>
+   </div>
+
+   <div class="modal-footer">
+    <a href="#" class="btn btn-primary">Save changes</a>
+    <a href="#" class="btn">Close</a>
    </div>
   </div>
  </body>

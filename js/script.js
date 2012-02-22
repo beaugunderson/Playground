@@ -1,6 +1,6 @@
 var jsonThrobber;
 
-function addFields(collection, eachCallback, allCallback) {
+function addFields(collection, success) {
    return $.getJSON(collection.url, { 'limit': 1000 }, function(data) {
       var fields = [];
 
@@ -21,8 +21,9 @@ function addFields(collection, eachCallback, allCallback) {
       });
 
       collection.fields = fields;
+      collection.data = data;
 
-      eachCallback();
+      success();
    });
 }
 
@@ -67,22 +68,106 @@ function usableFields(obj, name) {
    return results;
 }
 
+function setupDraggables() {
+   $('li', '#numbers, #strings').draggable({
+      revert: 'invalid',
+      opacity: 0.8,
+      helper: 'clone'
+   });
+
+   $('input', '#graph-fields').droppable({
+      accept: 'li',
+      activate: function(event, ui) {
+         $(this).addClass('drag-here');
+      },
+      deactivate: function(event, ui) {
+         $(this).removeClass('drag-here');
+      },
+      drop: function(event, ui) {
+         $(this).val(ui.draggable.text());
+      }
+   });
+}
+
+function getGraphType() {
+   return graphTypes[$('input[name=graph-type]:checked').eq(0).val()];
+}
+
+function formatField(field) {
+   return sprintf(
+      '<li>' +
+         '%(name)s' +
+      '</li>', field);
+}
+
 function formatHistogramField(field) {
-   return sprintf('<li>' +
-      '%(name)s' +
-      '<a href="#">+value</a>' +
+   return sprintf(
+      '<li>' +
+         '%(name)s' +
       '</li>', field);
 }
 
 function updateCollection(collection) {
    $('#numbers, #strings').html('');
 
+   var graphType = getGraphType();
+
    _.chain(collection.fields).filter(function(field) { return field.type === "number"; }).each(function(field) {
-      $('#numbers').append(sprintf('<li>%(name)s</li>', field));
+      $('#numbers').append(graphType.formatter(field));
    });
 
    _.chain(collection.fields).filter(function(field) { return field.type === "string"; }).each(function(field) {
-      $('#strings').append(sprintf('<li>%(name)s</li>', field));
+      $('#strings').append(graphType.formatter(field));
+   });
+}
+
+function updateFields() {
+   var graphType = getGraphType();
+
+   $('#graph-fields').html('');
+
+   if (graphType.unlimitedFields) {
+      // TODO
+      $('#graph-fields').append('<input id="field-1" type="text" />');
+   } else {
+      _.each(graphType.fields, function(field) {
+         $('#graph-fields').append(sprintf(
+            '<div class="input-append control-group">' +
+               '<input id="%(name)s" type="text" placeholder="%(title)s" />' +
+               '<span class="add-on"><a href="#"><em>ƒ</em>(<em>χ</em>)</a></span>' +
+            '</div>', field));
+      });
+   }
+
+   $('.add-on a').click(function() {
+      var editor = CodeMirror.fromTextArea(document.getElementById('function-definition'),
+      {
+         value: 'function(value) {\n\treturn value;\n}',
+         mode: 'javascript',
+         indentUnit: 3,
+         tabSize: 3,
+         lineWrapping: true,
+         lineNumbers: true,
+         matchBrackets: true,
+         extraKeys: {
+            "Ctrl-Enter": function(cm) { CodeMirror.simpleHint(cm, CodeMirror.javascriptHint); }
+         },
+         onChange: function() {
+            var content = editor.getValue();
+
+            try {
+               var f = new Function('value', content);
+
+               $('#function-output').text(f('test data'));
+            } catch(e) {
+               console.log('e', e);
+            }
+         }
+      });
+
+      $('#function-modal').modal('show');
+
+      return false;
    });
 }
 
@@ -109,47 +194,73 @@ function stopThrobber() {
 // The graph types and their respective options
 var graphTypes = {
    table: {
-      fields: {
-         unlimited: ['number', 'string']
-      }
+      formatter: formatField,
+      unlimitedFields: true
    },
    map: {
-      fields: {
-         latitude: {
-            types: ['number']
+      formatter: formatField,
+      fields: [
+         {
+            name: 'latitude',
+            title: 'Latitude',
+            types: ['number'],
+            required: true
          },
-         longitude: {
-            types: ['number']
+         {
+            name: 'longitude',
+            title: 'Longitude',
+            types: ['number'],
+            required: true
          },
-         label: {
+         {
+            name: 'label',
+            title: 'Label (optional)',
             types: ['number', 'string']
          }
-      }
+      ]
    },
    histogram: {
       formatter: formatHistogramField,
-      fields: {
-         value: {
-            types: ['number']
+      fields: [
+         {
+            name: 'value',
+            title: 'Value',
+            types: ['number'],
+            required: true
          }
-      }
+      ]
    },
    scatter: {
-      fields: {
-         x: {
-            types: ['number']
+      formatter: formatField,
+      fields: [
+         {
+            name: 'x',
+            title: 'X value',
+            types: ['number'],
+            required: true
          },
-         y: {
-            types: ['number']
+         {
+            name: 'y',
+            title: 'Y value',
+            types: ['number'],
+            required: true
          },
-         label: {
+         {
+            name: 'label',
+            title: 'Label (optional)',
             types: ['string']
          }
-      }
+      ]
    }
 };
 
 var collections;
+
+// State:
+// - Selected data source (collection at this point)
+// - Selected graph type
+// - Selected fields
+//   - Function definitions for each field
 
 $(function() {
    if (baseUrl === false) {
@@ -181,14 +292,18 @@ $(function() {
    };
 
    // Update the UI when the user selects a collection type
-   $('#collections').chosen().change(function() {
+   $('#data-sources').chosen().change(function() {
       updateCollection(collections[$(this).val()]);
+
+      setupDraggables();
    });
 
    // Update the UI when the user selects a graph type
    $('input[name=graph-type]').change(function() {
-      var checked = $('input[name=graph-type]:checked').eq(0).val();
+      updateFields();
    });
+
+   updateFields();
 
    var requests = [];
 
@@ -200,12 +315,13 @@ $(function() {
       requests.push(addFields(collection, function() {
          // Add the collection type to the dropdown once we have the data
          $('#collections').append(sprintf('<option value="%(handle)s">%(name)s</option>', collection));
-         $('#collections').trigger('liszt:updated');
+
+         $('#data-sources').trigger('liszt:updated');
       }));
    });
 
    // We use apply here because requests is an array
-   // and $.when expects multiple arguments
+   // and $.when expects multiple arguments instead
    $.when.apply($, requests).done(function() {
       // Stop the throbber when all of the requests complete
       stopThrobber();
