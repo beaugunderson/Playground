@@ -24,6 +24,11 @@ function addFields(source, success) {
          return field.name;
       });
 
+      // XXX: Temporary
+      fields = _.filter(fields, function(field) {
+         return !/<em>/.test(field.name);
+      });
+
       source.fields = fields;
       source.data = data;
 
