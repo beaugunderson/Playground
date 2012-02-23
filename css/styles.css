@@ -12,38 +12,19 @@ body {
    box-sizing: border-box;
 }
 
-#numbers {
-   margin-bottom: 1em;
-}
-
-#function-definition {
-   width: 95%;
-}
-
-.chzn-container {
-   margin-bottom: 1em;
-}
-
+#numbers,
+.chzn-container,
 #graph-types {
    margin-bottom: 1em;
 }
 
-#function-output-wrapper {
-   font-family: Consolas, monospace;
-   margin-top: 1em;
-   margin-bottom: 0;
+#no-data-returned {
+   display: none;
 }
 
+/* Draggable fields */
 .drag-here {
    background-color: #b5eda6;
-}
-
-.CodeMirror-scroll {
-   height: 150px;
-}
-
-.CodeMirror-completions {
-   z-index: 2000;
 }
 
 ul {
@@ -58,12 +39,26 @@ li {
    list-style-type: none;
 }
 
-#no-data-returned {
-   display: none;
+/* Function editing */
+.CodeMirror-scroll {
+   height: 150px;
+}
+
+.CodeMirror-completions {
+   z-index: 2000;
+}
+
+#function-definition {
+   width: 95%;
+}
+
+#function-output-wrapper {
+   font-family: Consolas, monospace;
+   margin-top: 1em;
+   margin-bottom: 0;
 }
 
 /* Graph styles */
-
 #title, #sub-title {
    text-align: center;
 }

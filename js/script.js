@@ -439,7 +439,7 @@ function renderHistogram(data) {
 
    var settings = {
       data: data,
-      height: 600,
+      height: 400,
       bins: Math.min(uniqueValues, 25),
       bottompad: 15,
       toppad: 25,
