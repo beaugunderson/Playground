@@ -175,12 +175,24 @@ function updateFields() {
             onChange: function() {
                var content = editor.getValue();
 
-               try {
-                  var f = new Function('value', content);
+               var f;
 
-                  $('#function-output').text(f('test data'));
+               // Try to create the function
+               try {
+                  f = new Function('value', content);
                } catch(e) {
-                  $('#function-output').html(sprintf('<em>%s</em>', e.message));
+                  $('#function-output').html(sprintf('compile error: <em>%s</em>', e.message));
+               }
+
+               if (f === undefined) {
+                  return;
+               }
+
+               // Try to run the function on the test data
+               try {
+                  $('#function-output').text(String(f('test data')));
+               } catch(e) {
+                  $('#function-output').html(sprintf('run error: <em>%s</em>', e.message));
                }
             }
          });
@@ -469,14 +481,18 @@ function renderHistogram(data) {
    $('#canvas').d3histogram(settings);
 }
 
+// XXX: Refactor this
 function getSource() {
    var $selected = $('#data-sources').find(':selected');
 
    var data = $selected.data();
 
    var collection = sources.collections[data['collection']];
+
    var connector = sources.connectors[data['connector']];
    var provider = data['provider'];
+
+   var push = sources.push[data['dataset']];
 
    var source;
 
@@ -484,6 +500,8 @@ function getSource() {
       return collection;
    } else if (connector && provider) {
       return connector.providers[provider];
+   } else if (push) {
+      return push;
    }
 }
 
@@ -498,13 +516,15 @@ var sources = {};
 function getPushDatasets(push) {
    var datasets = {};
 
-   _.each(datasets, function(dataset, i) {
+   _.each(push, function(dataset, i) {
       datasets[i] = {
          name: i,
          handle: i,
          url: sprintf('%s/push/%s/getCurrent', baseUrl, i)
       };
    });
+
+   return datasets;
 }
 
 $(function() {
