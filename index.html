@@ -35,7 +35,10 @@
            'js-lib/codemirror2/lib/util/simple-hint.js',
            'js-lib/codemirror2/lib/util/javascript-hint.js',
 
+           'parser/explore.js',
+
            'js/d3-histogram.js',
+           'js/viz-histogram.js',
 
            'js/config.js',
            'js/script.js',
@@ -133,11 +136,11 @@
    </div>
 
    <div class="modal-body">
-    <textarea id="function-definition">
-// You're writing the body of a function that receives
-// an argument named 'value'. This allows you to coerce
-// a value that's not numeric to a number for graphing.
-return value;</textarea>
+    <p>
+     Valid variables are <code>values</code>. Valid functions are <code>add</code>, <code>subtract</code>, <code>abs</code>, <code>parseInteger</code>, <code>parseFloat</code>, <code>length</code>, and <code>uniqueCharacters</code>. They can be nested.
+    </p>
+
+    <textarea id="function-definition"></textarea>
 
     <div id="function-output-wrapper">
      <strong>Output:</strong> <span id="function-output"></span>

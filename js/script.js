@@ -115,13 +115,6 @@ function formatField(field) {
       '</li>', field);
 }
 
-function formatHistogramField(field) {
-   return sprintf(
-      '<li>' +
-         '%(name)s' +
-      '</li>', field);
-}
-
 function updateSource(collection) {
    $('#numbers, #strings').html('');
 
@@ -309,6 +302,7 @@ var graphTypes = {
    }
 };
 
+// Get the list of collections from the map
 function collectionsFromMap(map) {
    var collections = {};
 
@@ -326,6 +320,7 @@ function collectionsFromMap(map) {
    return collections;
 }
 
+// Get the list of connectors from the map
 function connectorsFromMap(map) {
    var connectors = {};
 
@@ -351,6 +346,7 @@ function connectorsFromMap(map) {
    return connectors;
 }
 
+// Runs when any input is changed
 function validateFields() {
    var graphType = getGraphType();
    var source = getSource();
@@ -404,32 +400,6 @@ function render() {
    graphType.render(data);
 }
 
-function formatHistogramData(fields, data) {
-   // TODO: Change data format to include context (for hovertips, etc.)
-   var data = [];
-
-   // XXX: Don't hardcode this?
-   var path = $('#graph-fields input[data-field=value]').val();
-
-   var source = getSource();
-
-   _.each(source.data, function(datum) {
-      data.push(propertyByPath(datum, path));
-   });
-
-   // Coerce strings to their length for XXX numeric fields
-   data = _.map(data, function(datum) {
-      if (typeof datum == "string") {
-         return datum.length;
-      }
-
-      return datum;
-   });
-
-   // Return the scrubbed data
-   return _.without(data, undefined, null, false, NaN, '');
-}
-
 function propertyByPath(obj, path) {
    var segments = path.split('.');
 
@@ -444,41 +414,6 @@ function propertyByPath(obj, path) {
    }
 
    return currentObj;
-}
-
-function renderHistogram(data) {
-   var uniqueValues = _.uniq(data).length;
-
-   var settings = {
-      data: data,
-      height: 400,
-      bins: Math.min(uniqueValues, 25),
-      bottompad: 15,
-      toppad: 25,
-      labelsize: 10,
-      labelGenerator: function(d, i) {
-         var val = d3.round(d.y);
-
-         if (val == 0) {
-            return '';
-         } else {
-            return val;
-         }
-      },
-      rangeGenerator: function(d) {
-         return sprintf('%d', Math.ceil(d.x));
-      }
-   };
-
-   // XXX: Don't hardcode this?
-   var path = $('#graph-fields input[data-field=value]').val();
-
-   var source = getSource();
-
-   $('#title').html(sprintf('Histogram of <em>%s</em> data', source.name));
-   $('#sub-title').text(path);
-
-   $('#canvas').d3histogram(settings);
 }
 
 // XXX: Refactor this
@@ -503,6 +438,22 @@ function getSource() {
    } else if (push) {
       return push;
    }
+}
+
+function applyFunction(f, values) {
+   explore.yy = {
+      data: {
+         values: values
+      },
+      _: _,
+      apply: function(data, f) {
+         return _.map(data, function(datum) {
+            return f(datum);
+         });
+      }
+   };
+
+   return explore.parse(f);
 }
 
 var sources = {};
