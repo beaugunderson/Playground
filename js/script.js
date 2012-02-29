@@ -324,6 +324,25 @@ function collectionsFromMap(map) {
    return collections;
 }
 
+function providesToObject(provides) {
+   var tokens = provides.split('/');
+
+   if (tokens.length === 2) {
+      return {
+         connector: tokens[1],
+         provides: tokens[0]
+      }
+   }
+}
+
+function urlFromProvides(provides) {
+   var tokens = provides.split('/');
+
+   if (tokens.length === 2) {
+      return sprintf('%s/getCurrent/%s', tokens[1], tokens[0]);
+   }
+}
+
 // Get the list of connectors from the map
 function connectorsFromMap(map) {
    var connectors = {};
@@ -338,6 +357,20 @@ function connectorsFromMap(map) {
          providers: {}
       };
 
+      // XXX: This method has some issues too, for example
+      // lastfm/scrobble (instead of scrobbles)
+      _.each(connector.provides, function(provides) {
+         var providesObject = providesToObject(provides);
+
+         connectors[connector.handle].providers[providesObject.provides] = {
+            name: sprintf('%s/%s', connector.handle, providesObject.provides),
+            handle: providesObject.provides,
+            url: sprintf('%s/Me/%s', baseUrl, urlFromProvides(provides))
+         };
+      });
+
+      /*
+      // XXX: This doesn't really work
       _.each(connector.synclets, function(synclet) {
          connectors[connector.handle].providers[synclet.name] = {
             name: sprintf('%s/%s', connector.handle, synclet.name),
@@ -345,6 +378,7 @@ function connectorsFromMap(map) {
             url: sprintf('%s/getCurrent/%s', connectors[connector.handle].url, synclet.name)
          };
       });
+      */
    });
 
    return connectors;
