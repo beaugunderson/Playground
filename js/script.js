@@ -1,4 +1,5 @@
 var jsonThrobber;
+var functionEditor;
 
 var RE_NUMERIC_FIELD = /\.\d+(\.|$)/g;
 
@@ -154,8 +155,8 @@ function updateFields() {
    }
 
    $('.add-on a').click(function() {
-      var editor = CodeMirror.fromTextArea(document.getElementById('function-definition'),
-         {
+      if (functionEditor === undefined) {
+         functionEditor = CodeMirror.fromTextArea(document.getElementById('function-definition'), {
             mode: 'javascript',
             indentUnit: 3,
             tabSize: 3,
@@ -163,10 +164,12 @@ function updateFields() {
             lineNumbers: true,
             matchBrackets: true,
             extraKeys: {
-               "Ctrl-Enter": function(cm) { CodeMirror.simpleHint(cm, CodeMirror.javascriptHint); }
+               "Ctrl-Enter": function(cm) {
+                  CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+               }
             },
             onChange: function() {
-               var content = editor.getValue();
+               var content = functionEditor.getValue();
 
                var f;
 
@@ -189,6 +192,7 @@ function updateFields() {
                }
             }
          });
+      }
 
       $('#function-modal').modal('show');
 
