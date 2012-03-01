@@ -522,6 +522,11 @@ $(function() {
          "(see <a href=\"https://me.singly.com/Me/devdocs/\">the docs</a>)");
    }
 
+   if (top !== self) {
+      // We're in an iframe
+      $("head").append('<link rel="stylesheet" href="css/iframe.css" type="text/css" />');
+   }
+
    $.getJSON(baseUrl + '/push', function(datasets) {
       sources.push = getPushDatasets(datasets);
 

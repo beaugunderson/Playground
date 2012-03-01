@@ -1,1 +1,10 @@
-/* This file will contain styles that only show up on singly.com in the iframe view */
+/* This file contains styles that only show up on singly.com in the iframe view */
+
+.container-fluid {
+   padding-left: 0;
+   padding-right: 0;
+}
+
+body {
+   margin-top: 0;
+}
